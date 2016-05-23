@@ -17,6 +17,7 @@ This project contains the type definitions of all the official InversifyJS proje
 - [InversifyJS](https://github.com/inversify/InversifyJS)
 - [inversify-logger-middleware](https://github.com/inversify/inversify-logger-middleware)
 - [inversify-binding-decorators](https://github.com/inversify/inversify-binding-decorators)
+- [inversify-express-utils](https://github.com/inversify/inversify-express-utils)
 
 To use it you need to install it:
 
@@ -35,6 +36,10 @@ Then add a reference to the type definitions of the project that you need:
 
 ```ts
 /// <reference path="node_modules/inversify-dts/inversify-binding-decorators/inversify-binding-decorators.d.ts" />
+```
+
+```ts
+/// <reference path="node_modules/inversify-dts/inversify-express-utils/inversify-express-utils.d.ts" />
 ```
 
 ### License
