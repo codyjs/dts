@@ -2,6 +2,11 @@
   "dependencies": {},
   "globalDependencies": {
     "bluebird": "registry:dt/bluebird#2.0.0+20160319051630",
-    "harmony-proxy": "registry:dt/harmony-proxy#1.0.0+20160317120654"
+    "express": "registry:dt/express#4.0.0+20160317120654",
+    "express-serve-static-core": "registry:dt/express-serve-static-core#0.0.0+20160322035842",
+    "harmony-proxy": "registry:dt/harmony-proxy#1.0.0+20160317120654",
+    "mime": "registry:dt/mime#0.0.0+20160316155526",
+    "node": "registry:dt/node#6.0.0+20160523035754",
+    "serve-static": "registry:dt/serve-static#0.0.0+20160501131543"
   }
 }
