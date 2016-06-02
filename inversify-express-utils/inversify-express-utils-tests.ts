@@ -1,6 +1,5 @@
 /// <reference path="./inversify-express-utils.d.ts" />
 /// <reference path="../inversify/inversify.d.ts" />
-/// <reference path="../typings/index.d.ts" />
 
 import { InversifyExpressServer, Controller, Get, All, Delete, Head, Put, Patch, Post, Method } from "inversify-express-utils";
 import * as express from "express";
@@ -12,7 +11,7 @@ module server {
 
     server
         .setConfig((app) => {
-            app.use((req, res, next) => {
+            app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
                 console.log("hello world");
                 next();
             });
