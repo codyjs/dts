@@ -3,22 +3,22 @@
 // Definitions by: inversify <https://github.com/inversify/>
 // Definitions: https://github.com/borisyankov/DefinitelyTyped
 
-/// <reference path="..//inversify/inversify.d.ts"/>
+/// <reference path="../inversify/inversify.d.ts"/>
 
 declare namespace inversifyLoggerMiddleware {
 
     export interface ILoggerSettings {
-        request?: IRequestLogger;
+        request?: IRequestLoggerSettings;
         time?: boolean;
     }
 
-    export interface IRequestLogger {
+    export interface IRequestLoggerSettings {
         serviceIdentifier?: boolean;
-        bindings?: IBindingLogger;
-        target?: ITargetLogger;
+        bindings?: IBindingLoggerSettings;
+        target?: ITargetLoggerSettings;
     }
 
-    export interface IBindingLogger {
+    export interface IBindingLoggerSettings {
         activated?: boolean;
         serviceIdentifier?: boolean;
         implementationType?: boolean;
@@ -32,13 +32,21 @@ declare namespace inversifyLoggerMiddleware {
         type?: boolean;
     }
 
-    export interface ITargetLogger {
+    export interface ITargetLoggerSettings {
         serviceIdentifier?: boolean;
         name?: boolean;
         metadata?: boolean;
     }
 
-    export default function makeLoggerMiddleware(settings?: ILoggerSettings, renderer?: (out: string) => void): inversify.IMiddleware
+    export interface ILogEntry {
+        error: boolean;
+        exception: any;
+        rootRequest: any;
+        time: string;
+    }
+
+    export function makeLoggerMiddleware(settings?: ILoggerSettings, renderer?: (out: ILogEntry) => void): inversify.IMiddleware;
+    export function textSerializer(entry: ILogEntry): string;
 
 }
 

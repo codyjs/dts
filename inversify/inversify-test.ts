@@ -1,4 +1,5 @@
 /// <reference path="inversify.d.ts" />
+/// <reference path="../typings/index.d.ts" />
 
 import {
     Kernel,
@@ -9,6 +10,7 @@ import {
     makePropertyInjectTaggedDecorator,
     makePropertyInjectNamedDecorator,
     makePropertyInjectDecorator,
+    PlanAndResolve, PlanAndResolveArgs
 } from "inversify";
 
 import * as Proxy from "harmony-proxy";
@@ -89,26 +91,17 @@ module external_module_test {
     console.log(ninja2);
 
     // middleware
-    function logger(next: (context: IContext) => any) {
-        return (context: IContext) => {
-            let result = next(context);
-            console.log("CONTEXT: ", context);
-            console.log("RESULT: ", result);
+    function logger(planAndResolve: PlanAndResolve<any>): PlanAndResolve<any> {
+        return (args: PlanAndResolveArgs) => {
+            let start = new Date().getTime();
+            let result = planAndResolve(args);
+            let end = new Date().getTime();
+            console.log(end - start);
             return result;
         };
-    };
+    }
 
-    function visualReporter(next: (context: IContext) => any) {
-        return (context: IContext) => {
-            let result = next(context);
-            let _window: any = window;
-            let devTools = _window.__inversify_devtools__;
-            if (devTools !== undefined) { devTools.log(context, result); }
-            return result;
-        };
-    };
-
-    kernel.applyMiddleware(logger, visualReporter);
+    kernel.applyMiddleware(logger, logger);
 
     // binding types
     kernel.bind<IKatana>("IKatana").to(Katana);

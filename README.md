@@ -42,6 +42,8 @@ Then add a reference to the type definitions of the project that you need:
 /// <reference path="node_modules/inversify-dts/inversify-express-utils/inversify-express-utils.d.ts" />
 ```
 
+Note: some of these type difinitions may require third party type definitions like the bluebird or node type definitions. 
+
 ### License
 
 License under the MIT License (MIT)

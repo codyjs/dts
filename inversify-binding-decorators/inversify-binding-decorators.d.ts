@@ -3,8 +3,6 @@
 // Definitions by: inversify <https://github.com/inversify/>
 // Definitions: https://github.com/borisyankov/DefinitelyTyped
 
-/// <reference path="../inversify/inversify.d.ts" />
-
 declare namespace inversifyBindingDecorators {
 
     interface IProvideInSyntax<T> extends IProvideDoneSyntax<T> {

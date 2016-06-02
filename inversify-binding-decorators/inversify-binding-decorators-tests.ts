@@ -1,4 +1,6 @@
 /// <reference path="./inversify-binding-decorators.d.ts" />
+/// <reference path="../inversify/inversify.d.ts" />
+/// <reference path="../typings/index.d.ts" />
 
 import { inject, Kernel } from "inversify";
 import { autoProvide, makeProvideDecorator, makeFluentProvideDecorator } from "inversify-binding-decorators";

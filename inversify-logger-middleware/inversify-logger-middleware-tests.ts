@@ -1,13 +1,24 @@
 /// <reference path="./inversify-logger-middleware.d.ts" />
 /// <reference path="../inversify/inversify.d.ts" />
+/// <reference path="../typings//index.d.ts" />
 
 declare var kernel: inversify.IKernel;
 
-import makeLoggerMiddleware from "inversify-logger-middleware";
+import { makeLoggerMiddleware, textSerializer } from "inversify-logger-middleware";
 
-let makeStringRenderer = function (loggerOutput: { content: string }) {
-    return function (out: string) {
-        loggerOutput.content = out;
+interface ILoggerOutput<T> {
+    entry: T;
+}
+
+let makeStringRenderer = function (loggerOutput: ILoggerOutput<string>) {
+    return function (entry: inversifyLoggerMiddleware.ILogEntry) {
+        loggerOutput.entry = textSerializer(entry);
+    };
+};
+
+let makeObjRenderer = function (loggerOutput: ILoggerOutput<any>) {
+    return function (entry: inversifyLoggerMiddleware.ILogEntry) {
+        loggerOutput.entry = entry;
     };
 };
 
@@ -36,7 +47,15 @@ let options: inversifyLoggerMiddleware.ILoggerSettings = {
     time: true
 };
 
-let loggerOutput = { content: "" };
-let stringRenderer = makeStringRenderer(loggerOutput);
-let logger = makeLoggerMiddleware(options, stringRenderer);
+let logger = makeLoggerMiddleware();
 kernel.applyMiddleware(logger);
+
+let loggerOutput1: ILoggerOutput<string> = { entry: null };
+let stringRenderer1 = makeStringRenderer(loggerOutput1);
+let logger1 = makeLoggerMiddleware(options, stringRenderer1);
+kernel.applyMiddleware(logger1);
+
+let loggerOutput2: ILoggerOutput<inversifyLoggerMiddleware.ILogEntry> = { entry: null };
+let objRenderer2 = makeObjRenderer(loggerOutput2);
+let logger2 = makeLoggerMiddleware(options, objRenderer2);
+kernel.applyMiddleware(logger2);

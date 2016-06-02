@@ -1,9 +1,7 @@
-// Type definitions for inversify 2.0.0-beta.4
+// Type definitions for inversify 2.0.0-beta.6
 // Project: https://github.com/inversify/InversifyJS
 // Definitions by: inversify <https://github.com/inversify>
 // Definitions: https://github.com/borisyankov/DefinitelyTyped
-
-/// <reference path="../typings/index.d.ts" />
 
 interface Symbol {
     toString(): string;
@@ -22,8 +20,19 @@ declare namespace inversify {
         new(): IKernel;
     }
 
+    export interface PlanAndResolve<T> {
+        (args: PlanAndResolveArgs): T[];
+    }
+
     export interface IMiddleware extends Function {
-        (next: (context: IContext) => any): (context: IContext) => any;
+        (next: PlanAndResolve<any>): PlanAndResolve<any>;
+    }
+
+    export interface PlanAndResolveArgs {
+        multiInject: boolean;
+        serviceIdentifier: (string|Symbol|INewable<any>);
+        target: ITarget;
+        contextInterceptor: (contexts: IContext) => IContext;
     }
 
     export interface IKernel {

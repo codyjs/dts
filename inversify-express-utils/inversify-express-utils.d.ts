@@ -1,5 +1,5 @@
 /// <reference path="../inversify/inversify.d.ts" />
-/// <reference path="../typings/index.d.ts" />
+/// <reference path="../typings//index.d.ts" />
 
 declare module "inversify-express-utils" {
 
