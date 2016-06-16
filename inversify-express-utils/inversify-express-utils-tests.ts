@@ -17,6 +17,12 @@ module server {
                 next();
             });
         })
+        .setErrorConfig((app) => {
+            app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+                console.error(err.stack);
+                res.status(500).send("Something broke!");
+            });
+        })
         .build()
         .listen(3000, "localhost");
 }
