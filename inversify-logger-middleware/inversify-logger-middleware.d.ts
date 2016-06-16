@@ -1,7 +1,6 @@
-// Type definitions for inversify 1.0.0-beta.2
+// Type definitions for inversify 1.0.0-beta.5
 // Project: https://github.com/inversify/inversify-logger-middleware
 // Definitions by: inversify <https://github.com/inversify/>
-// Definitions: https://github.com/borisyankov/DefinitelyTyped
 
 /// <reference path="../inversify/inversify.d.ts"/>
 
@@ -41,7 +40,11 @@ declare namespace inversifyLoggerMiddleware {
     export interface ILogEntry {
         error: boolean;
         exception: any;
-        rootRequest: any;
+        multiInject: boolean;
+        results: any[];
+        rootRequest: inversify.IRequest;
+        serviceIdentifier: any;
+        target: any;
         time: string;
     }
 

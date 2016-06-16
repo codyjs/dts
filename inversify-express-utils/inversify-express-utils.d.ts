@@ -1,3 +1,7 @@
+// Type definitions for inversify 1.0.0-alpha.3
+// Project: https://github.com/inversify/inversify-express-utils
+// Definitions by: inversify <https://github.com/inversify/>
+
 /// <reference path="../inversify/inversify.d.ts" />
 
 declare module "inversify-express-utils" {
