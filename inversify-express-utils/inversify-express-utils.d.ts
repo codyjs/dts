@@ -3,7 +3,6 @@
 // Definitions by: inversify <https://github.com/inversify/>
 
 /// <reference path="../inversify/inversify.d.ts" />
-/// <reference path="../typings/index.d.ts" />
 
 declare module "inversify-express-utils" {
 
