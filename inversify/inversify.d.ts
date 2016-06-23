@@ -1,4 +1,4 @@
-// Type definitions for inversify 2.0.0-beta.8
+// Type definitions for inversify 2.0.0-beta.9
 // Project: https://github.com/inversify/InversifyJS
 // Definitions by: inversify <https://github.com/inversify>
 // Definitions: https://github.com/borisyankov/DefinitelyTyped
@@ -16,192 +16,259 @@ declare var Symbol: SymbolConstructor;
 
 declare namespace inversify {
 
-    export interface IKernelConstructor {
-        new(): IKernel;
+    namespace interfaces {
+
+        export interface KernelConstructor {
+            new(): Kernel;
+        }
+
+        export interface KernelModuleConstructor {
+            new(registry: (bind: Bind) => void): KernelModule;
+        }
+
+        export interface Newable<T> {
+            new(...args: any[]): T;
+        }
+
+        export type ServiceIdentifier<T> = (string|Symbol|Newable<T>);
+
+        export interface Binding<T> extends Clonable<Binding<T>> {
+            guid: string;
+            moduleId: string;
+            activated: boolean;
+            serviceIdentifier: ServiceIdentifier<T>;
+            implementationType: Newable<T>;
+            factory: FactoryCreator<any>;
+            provider: ProviderCreator<any>;
+            constraint: (request: Request) => boolean;
+            onActivation: (context: Context, injectable: T) => T;
+            cache: T;
+            dynamicValue: () => T;
+            scope: number; // BindingScope
+            type: number; // BindingType
+        }
+
+        export interface Factory<T> extends Function {
+            (...args: any[]): (((...args: any[]) => T)|T);
+        }
+
+        export interface FactoryCreator<T> extends Function {
+            (context: Context): Factory<T>;
+        }
+
+        export interface Provider<T> extends Function {
+            (): Promise<T>;
+        }
+
+        export interface ProviderCreator<T> extends Function {
+            (context: Context): Provider<T>;
+        }
+
+        export interface PlanAndResolve<T> {
+            (args: PlanAndResolveArgs): T[];
+        }
+
+        export interface PlanAndResolveArgs {
+            multiInject: boolean;
+            serviceIdentifier: ServiceIdentifier<any>;
+            target: Target;
+            contextInterceptor: (contexts: Context) => Context;
+        }
+
+        export interface Middleware extends Function {
+            (next: PlanAndResolve<any>): PlanAndResolve<any>;
+        }
+
+        export interface Context {
+            guid: string;
+            kernel: Kernel;
+            plan: Plan;
+            addPlan(plan: Plan): void;
+        }
+
+        export interface ReflectResult {
+            [key: string]: Metadata[];
+        }
+
+        export interface Metadata {
+            key: string;
+            value: any;
+        }
+
+        export interface Plan {
+            parentContext: Context;
+            rootRequest: Request;
+        }
+
+        export interface Planner {
+            createContext(kernel: Kernel): Context;
+            createPlan(parentContext: Context, binding: Binding<any>, target: Target): Plan;
+            getBindings<T>(kernel: Kernel, serviceIdentifier: ServiceIdentifier<T>): Binding<T>[];
+            getActiveBindings(parentRequest: Request, target: Target): Binding<any>[];
+        }
+
+        export interface QueryableString {
+            startsWith(searchString: string): boolean;
+            endsWith(searchString: string): boolean;
+            contains(searchString: string): boolean;
+            equals(compareString: string): boolean;
+            value(): string;
+        }
+
+        export interface Request {
+            guid: string;
+            serviceIdentifier: ServiceIdentifier<any>;
+            parentContext: Context;
+            parentRequest: Request;
+            childRequests: Request[];
+            target: Target;
+            bindings: Binding<any>[];
+            addChildRequest(
+                serviceIdentifier: ServiceIdentifier<any>,
+                bindings: (Binding<any>|Binding<any>[]),
+                target: Target
+            ): Request;
+        }
+
+        export interface Target {
+            guid: string;
+            serviceIdentifier: ServiceIdentifier<any>;
+            name: QueryableString;
+            metadata: Array<Metadata>;
+            hasTag(key: string): boolean;
+            isArray(): boolean;
+            matchesArray(name: string|Symbol|Newable<any>): boolean;
+            isNamed(): boolean;
+            isTagged(): boolean;
+            matchesNamedTag(name: string): boolean;
+            matchesTag(key: string): (value: any) => boolean;
+        }
+
+        export interface Resolver {
+            resolve<T>(context: Context): T;
+        }
+
+        export interface Kernel {
+            guid: string;
+            bind<T>(serviceIdentifier: ServiceIdentifier<T>): BindingToSyntax<T>;
+            unbind(serviceIdentifier: ServiceIdentifier<any>): void;
+            unbindAll(): void;
+            isBound(serviceIdentifier: ServiceIdentifier<any>): boolean;
+            get<T>(serviceIdentifier: ServiceIdentifier<T>): T;
+            getNamed<T>(serviceIdentifier: ServiceIdentifier<T>, named: string): T;
+            getTagged<T>(serviceIdentifier: ServiceIdentifier<T>, key: string, value: any): T;
+            getAll<T>(serviceIdentifier: ServiceIdentifier<T>): T[];
+            load(...modules: KernelModule[]): void;
+            unload(...modules: KernelModule[]): void;
+            applyMiddleware(...middleware: Middleware[]): void;
+            getServiceIdentifierAsString(serviceIdentifier: ServiceIdentifier<any>): string;
+            snapshot(): void;
+            restore(): void;
+        }
+
+        export interface Bind extends Function {
+            <T>(serviceIdentifier: ServiceIdentifier<T>): BindingToSyntax<T>;
+        }
+
+        export interface KernelModule {
+            guid: string;
+            registry: (bind: Bind) => void;
+        }
+
+        export interface KernelSnapshot {
+            bindings: Lookup<Binding<any>>;
+            middleware: PlanAndResolve<any>;
+        }
+
+        export interface Clonable<T> {
+            clone(): T;
+        }
+
+        export interface Lookup<T> extends Clonable<Lookup<T>> {
+            add(serviceIdentifier: ServiceIdentifier<any>, value: T): void;
+            get(serviceIdentifier: ServiceIdentifier<any>): Array<T>;
+            remove(serviceIdentifier: ServiceIdentifier<any>): void;
+            removeByModuleId(moduleId: string): void;
+            hasKey(serviceIdentifier: ServiceIdentifier<any>): boolean;
+        }
+
+        export interface KeyValuePair<T> {
+            serviceIdentifier: ServiceIdentifier<any>;
+            value: Array<T>;
+        }
+
+        export interface BindingInSyntax<T> {
+            inSingletonScope(): BindingWhenOnSyntax<T>;
+        }
+
+        export interface BindingInWhenOnSyntax<T> extends BindingInSyntax<T>, BindingWhenOnSyntax<T> {}
+
+        export interface BindingOnSyntax<T> {
+            onActivation(fn: (context: Context, injectable: T) => T): BindingWhenSyntax<T>;
+        }
+
+        export interface BindingToSyntax<T> {
+            to(constructor: { new(...args: any[]): T; }): BindingInWhenOnSyntax<T>;
+            toConstantValue(value: T): BindingWhenOnSyntax<T>;
+            toDynamicValue(func: () => T): BindingWhenOnSyntax<T>;
+            toConstructor<T2>(constructor: Newable<T2>): BindingWhenOnSyntax<T>;
+            toFactory<T2>(factory: FactoryCreator<T2>): BindingWhenOnSyntax<T>;
+            toFunction(func: T): BindingWhenOnSyntax<T>;
+            toAutoFactory<T2>(serviceIdentifier: ServiceIdentifier<T2>): BindingWhenOnSyntax<T>;
+            toProvider<T2>(provider: ProviderCreator<T2>): BindingWhenOnSyntax<T>;
+        }
+
+        export interface BindingWhenOnSyntax<T> extends BindingWhenSyntax<T>, BindingOnSyntax<T> {}
+
+        export interface BindingWhenSyntax<T> {
+            when(constraint: (request: Request) => boolean): BindingOnSyntax<T>;
+            whenTargetNamed(name: string): BindingOnSyntax<T>;
+            whenTargetTagged(tag: string, value: any): BindingOnSyntax<T>;
+            whenInjectedInto(parent: (Function|string)): BindingOnSyntax<T>;
+            whenParentNamed(name: string): BindingOnSyntax<T>;
+            whenParentTagged(tag: string, value: any): BindingOnSyntax<T>;
+            whenAnyAncestorIs(ancestor: (Function|string)): BindingOnSyntax<T>;
+            whenNoAncestorIs(ancestor: (Function|string)): BindingOnSyntax<T>;
+            whenAnyAncestorNamed(name: string): BindingOnSyntax<T>;
+            whenAnyAncestorTagged(tag: string, value: any): BindingOnSyntax<T>;
+            whenNoAncestorNamed(name: string): BindingOnSyntax<T>;
+            whenNoAncestorTagged(tag: string, value: any): BindingOnSyntax<T>;
+            whenAnyAncestorMatches(constraint: (request: Request) => boolean): BindingOnSyntax<T>;
+            whenNoAncestorMatches(constraint: (request: Request) => boolean): BindingOnSyntax<T>;
+        }
+
     }
 
-    export interface PlanAndResolve<T> {
-        (args: PlanAndResolveArgs): T[];
-    }
-
-    export interface IMiddleware extends Function {
-        (next: PlanAndResolve<any>): PlanAndResolve<any>;
-    }
-
-    export interface PlanAndResolveArgs {
-        multiInject: boolean;
-        serviceIdentifier: (string|Symbol|INewable<any>);
-        target: ITarget;
-        contextInterceptor: (contexts: IContext) => IContext;
-    }
-
-    export interface IKernel {
-        bind<T>(serviceIdentifier: (string|Symbol|INewable<T>)): IBindingToSyntax<T>;
-        unbind(serviceIdentifier: (string|Symbol|any)): void;
-        unbindAll(): void;
-        get<T>(serviceIdentifier: (string|Symbol|INewable<T>)): T;
-        getNamed<T>(serviceIdentifier: (string|Symbol|INewable<T>), named: string): T;
-        getTagged<T>(serviceIdentifier: (string|Symbol|INewable<T>), key: string, value: any): T;
-        getAll<T>(serviceIdentifier: (string|Symbol|INewable<T>)): T[];
-        load(...modules: IKernelModule[]): void;
-        applyMiddleware(...middleware: IMiddleware[]): void;
-        getServiceIdentifierAsString(serviceIdentifier: (string|Symbol|INewable<any>)): string;
-        snapshot(): void;
-        restore(): void;
-    }
-
-    export interface IKernelModule extends Function {
-        (kernel: IKernel): void;
-    }
-
-    interface IBindingOnSyntax<T> {
-        onActivation(fn: (context: IContext, injectable: T) => T): IBindingWhenSyntax<T>;
-    }
-
-    interface IBindingInSyntax<T> {
-        inSingletonScope(): IBindingWhenOnSyntax<T>;
-    }
-
-    interface IBindingWhenSyntax<T> {
-        when(constraint: (request: IRequest) => boolean): IBindingOnSyntax<T>;
-        whenTargetNamed(name: string): IBindingOnSyntax<T>;
-        whenTargetTagged(tag: string, value: any): IBindingOnSyntax<T>;
-        whenInjectedInto(parent: (Function|string)): IBindingOnSyntax<T>;
-        whenParentNamed(name: string): IBindingOnSyntax<T>;
-        whenParentTagged(tag: string, value: any): IBindingOnSyntax<T>;
-        whenAnyAncestorIs(ancestor: (Function|string)): IBindingOnSyntax<T>;
-        whenNoAncestorIs(ancestor: (Function|string)): IBindingOnSyntax<T>;
-        whenAnyAncestorNamed(name: string): IBindingOnSyntax<T>;
-        whenAnyAncestorTagged(tag: string, value: any): IBindingOnSyntax<T>;
-        whenNoAncestorNamed(name: string): IBindingOnSyntax<T>;
-        whenNoAncestorTagged(tag: string, value: any): IBindingOnSyntax<T>;
-        whenAnyAncestorMatches(constraint: (request: IRequest) => boolean): IBindingOnSyntax<T>;
-        whenNoAncestorMatches(constraint: (request: IRequest) => boolean): IBindingOnSyntax<T>;
-    }
-
-    interface IBindingToSyntax<T> {
-        to(constructor: { new(...args: any[]): T; }): IBindingInWhenOnSyntax<T>;
-        toConstantValue(value: T): IBindingWhenOnSyntax<T>;
-        toDynamicValue(func: () => T): IBindingWhenOnSyntax<T>;
-        toConstructor<T2>(constructor: INewable<T2>): IBindingWhenOnSyntax<T>;
-        toFactory<T2>(factory: IFactoryCreator<T2>): IBindingWhenOnSyntax<T>;
-        toAutoFactory<T2>(serviceIdentifier: (string|Symbol|T2)): IBindingWhenOnSyntax<T>;
-        toProvider<T2>(provider: IProviderCreator<T2>): IBindingWhenOnSyntax<T>;
-    }
-
-    interface IBindingInWhenOnSyntax<T> extends IBindingInSyntax<T>, IBindingWhenOnSyntax<T> {}
-    interface IBindingWhenOnSyntax<T> extends IBindingWhenSyntax<T>, IBindingOnSyntax<T> {}
-
-    export interface IFactory<T> extends Function {
-        (...args: any[]): (((...args: any[]) => T)|T);
-    }
-
-    interface IFactoryCreator<T> extends Function {
-        (context: IContext): IFactory<T>;
-    }
-
-    export interface INewable<T> {
-        new(...args: any[]): T;
-    }
-
-    export interface IProvider<T> extends Function {
-        (): Promise<T>;
-    }
-
-    interface IProviderCreator<T> extends Function {
-        (context: IContext): IProvider<T>;
-    }
-
-    export interface IContext {
-        kernel: IKernel;
-        plan: IPlan;
-        addPlan(plan: IPlan): void;
-    }
-
-    export interface IPlan {
-        parentContext: IContext;
-        rootRequest: IRequest;
-    }
-
-    export interface IRequest {
-        serviceIdentifier: (string|Symbol|INewable<any>);
-        parentContext: IContext;
-        parentRequest: IRequest;
-        childRequests: IRequest[];
-        target: ITarget;
-        bindings: IBinding<any>[];
-        addChildRequest(
-            serviceIdentifier: (string|Symbol|INewable<any>),
-            bindings: (IBinding<any>|IBinding<any>[]),
-            target: ITarget): IRequest;
-    }
-
-    export interface IBinding<T> {
-        activated: boolean;
-        serviceIdentifier: (string|Symbol|INewable<T>);
-        implementationType: INewable<T>;
-        factory: IFactoryCreator<any>;
-        provider: IProviderCreator<any>;
-        constraint: (request: IRequest) => boolean;
-        onActivation: (context: IContext, injectable: T) => T;
-        cache: T;
-        dynamicValue: () => T;
-        scope: number; // BindingScope
-        type: number; // BindingType
-    }
-
-    export interface ITarget {
-        serviceIdentifier: (string|Symbol|INewable<any>);
-        name: IQueryableString;
-        metadata: Array<IMetadata>;
-        hasTag(key: string): boolean;
-        isArray(): boolean;
-        matchesArray(name: string|Symbol|any): boolean;
-        isNamed(): boolean;
-        isTagged(): boolean;
-        matchesNamedTag(name: string): boolean;
-        matchesTag(key: string): (value: any) => boolean;
-    }
-
-    export interface IQueryableString {
-        startsWith(searchString: string): boolean;
-        endsWith(searchString: string): boolean;
-        contains(searchString: string): boolean;
-        equals(compareString: string): boolean;
-        value(): string;
-    }
-
-    export interface IMetadata {
-        key: string;
-        value: any;
-    }
-
-    export var Kernel: IKernelConstructor;
+    export var Kernel: interfaces.KernelConstructor;
+    export var KernelModule: interfaces.KernelModuleConstructor;
     export var decorate: (decorator: (ClassDecorator|ParameterDecorator), target: any, parameterIndex?: number) => void;
     export function injectable(): (typeConstructor: any) => void;
     export function tagged(metadataKey: string, metadataValue: any): (target: any, targetKey: string, index?: number) => any;
     export function named(name: string): (target: any, targetKey: string, index?: number) => any;
     export function targetName(name: string): (target: any, targetKey: string, index: number) => any;
-    export function inject(serviceIdentifier: (string|Symbol|any)): (target: any, targetKey: string, index?: number) => any;
-    export function multiInject(serviceIdentifier: (string|Symbol|any)): (target: any, targetKey: string, index?: number) => any;
+    export function inject(serviceIdentifier: interfaces.ServiceIdentifier<any>): (target: any, targetKey: string, index?: number) => any;
 
-    export function makePropertyInjectDecorator(kernel: IKernel):
-        (serviceIdentifier: (string|Symbol|INewable<any>)) => (proto: any, key: string) => void;
+    export function multiInject(
+        serviceIdentifier: interfaces.ServiceIdentifier<any>
+    ): (target: any, targetKey: string, index?: number) => any;
 
-    export function makePropertyInjectNamedDecorator(kernel: IKernel):
-        (serviceIdentifier: (string|Symbol|INewable<any>), named: string) => (proto: any, key: string) => void;
+    export function makePropertyInjectDecorator(kernel: interfaces.Kernel):
+        (serviceIdentifier: (string|Symbol|interfaces.Newable<any>)) => (proto: any, key: string) => void;
 
-    export function makePropertyInjectTaggedDecorator(kernel: IKernel):
-        (serviceIdentifier: (string|Symbol|INewable<any>), key: string, value: any) => (proto: any, propertyName: string) => void;
+    export function makePropertyInjectNamedDecorator(kernel: interfaces.Kernel):
+        (serviceIdentifier: (string|Symbol|interfaces.Newable<any>), named: string) => (proto: any, key: string) => void;
 
-    export function makePropertyMultiInjectDecorator(kernel: IKernel):
-        (serviceIdentifier: (string|Symbol|INewable<any>)) => (proto: any, key: string) => void;
+    export function makePropertyInjectTaggedDecorator(kernel: interfaces.Kernel):
+        (serviceIdentifier: (string|Symbol|interfaces.Newable<any>), key: string, value: any) => (proto: any, propertyName: string) => void;
+
+    export function makePropertyMultiInjectDecorator(kernel: interfaces.Kernel):
+        (serviceIdentifier: (string|Symbol|interfaces.Newable<any>)) => (proto: any, key: string) => void;
 
     // constraint helpers
-    export var traverseAncerstors: (request: IRequest, constraint: (request: IRequest) => boolean) => boolean;
-    export var taggedConstraint: (tag: string) => (value: any) => (request: IRequest) => boolean;
-    export var namedConstraint: (value: any) => (request: IRequest) => boolean;
-    export var typeConstraint: (type: (Function|string)) => (request: IRequest) => boolean;
+    export var traverseAncerstors: (request: interfaces.Request, constraint: (request: interfaces.Request) => boolean) => boolean;
+    export var taggedConstraint: (tag: string) => (value: any) => (request: interfaces.Request) => boolean;
+    export var namedConstraint: (value: any) => (request: interfaces.Request) => boolean;
+    export var typeConstraint: (type: (Function|string)) => (request: interfaces.Request) => boolean;
 }
 
 declare module "inversify" {

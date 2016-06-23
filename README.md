@@ -1,11 +1,11 @@
 # inversify-dts
 [![Join the chat at https://gitter.im/inversify/InversifyJS](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/inversify/InversifyJS?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![Build Status](https://secure.travis-ci.org/inversify/dts.svg?branch=master)](https://travis-ci.org/inversify/dts)
+[![Build Status](https://secure.travis-ci.org/inversify/inversify-dts.svg?branch=master)](https://travis-ci.org/inversify/inversify-dts)
 [![npm version](https://badge.fury.io/js/inversify-dts.svg)](http://badge.fury.io/js/inversify-dts)
-[![Dependencies](https://david-dm.org/inversify/dts.svg)](https://david-dm.org/inversify/dts#info=dependencies)
-[![Dependencies](https://david-dm.org/inversify/dts/dev-status.svg)](https://david-dm.org/inversify/dts/#info=devDependencies)
-[![Dependencies](https://david-dm.org/inversify/dts/peer-status.svg)](https://david-dm.org/inversify/dts/#info=peerDependenciess)
-[![Known Vulnerabilities](https://snyk.io/test/github/inversify/dts/badge.svg)](https://snyk.io/test/github/inversify/dts)
+[![Dependencies](https://david-dm.org/inversify/inversify-dts.svg)](https://david-dm.org/inversify/inversify-dts#info=dependencies)
+[![Dependencies](https://david-dm.org/inversify/inversify-dts/dev-status.svg)](https://david-dm.org/inversify/inversify-dts/#info=devDependencies)
+[![Dependencies](https://david-dm.org/inversify/inversify-dts/peer-status.svg)](https://david-dm.org/inversify/inversify-dts/#info=peerDependenciess)
+[![Known Vulnerabilities](https://snyk.io/test/github/inversify/inversify-dts/badge.svg)](https://snyk.io/test/github/inversify/inversify-dts)
 
 [![NPM](https://nodei.co/npm/inversify-dts.png?downloads=true&downloadRank=true)](https://nodei.co/npm/inversify-dts/)
 [![NPM](https://nodei.co/npm-dl/inversify-dts.png?months=9&height=3)](https://nodei.co/npm/inversify-dts/)

@@ -1,6 +1,4 @@
 /// <reference path="./inversify-express-utils.d.ts" />
-/// <reference path="../inversify/inversify.d.ts" />
-/// <reference path="../typings//index.d.ts" />
 
 import { InversifyExpressServer, Controller, Get, All, Delete, Head, Put, Patch, Post, Method } from "inversify-express-utils";
 import * as express from "express";
@@ -11,13 +9,13 @@ module server {
     let server = new InversifyExpressServer(kernel);
 
     server
-        .setConfig((app) => {
+        .setConfig((app: express.Application) => {
             app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
                 console.log("hello world");
                 next();
             });
         })
-        .setErrorConfig((app) => {
+        .setErrorConfig((app: express.Application) => {
             app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
                 console.error(err.stack);
                 res.status(500).send("Something broke!");
